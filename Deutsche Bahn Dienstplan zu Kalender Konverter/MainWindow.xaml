@@ -1,0 +1,27 @@
+﻿<Window x:Class="Deutsche_Bahn_Dienstplan_zu_Kalender_Konverter.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Deutsche_Bahn_Dienstplan_zu_Kalender_Konverter"
+        mc:Ignorable="d"
+        Title="DB Schichten zu Kalender Konverter" Height="200" Width="565">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="94*"/>
+            <ColumnDefinition Width="471*"/>
+        </Grid.ColumnDefinitions>
+        <Image Source="/header.png" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,17,0,0" Width="534" Height="50" Grid.ColumnSpan="2"/>
+        <TextBox x:Name="FilePathTextBox" Text="{Binding ResultFileName}" HorizontalAlignment="Left" VerticalAlignment="Center" Width="368" Height="18" Margin="15,0,0,0" TextWrapping="Wrap" IsReadOnly="True" TextChanged="FilePathTextBox_TextChanged" Grid.Column="1"/>
+        <!-- Button to Pick File -->
+        <Button Content="Excel Tabelle auswählen" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                Click="PickFile_Click" Padding="10" Width="150" Margin="108,136,0,0" Background="#FFF01414" Foreground="White" BorderThickness="1,1,1,1" Grid.Column="1">
+            <Button.Style>
+                <Style/>
+            </Button.Style>
+        </Button>
+        <TextBlock x:Name="PickFileTextBlock" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"
+                   FontSize="14" TextWrapping="Wrap" TextAlignment="Center" Width="94" Height="30"Height="18" Grid.ColumnSpan="2"><Run Language="de-de" Text="Kalendername"/></TextBlock>
+        <!-- TextBlock to Show the Result Message -->
+    </Grid>
+</Window>
