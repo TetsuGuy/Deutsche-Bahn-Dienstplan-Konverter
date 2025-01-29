@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using Microsoft.Win32;
 using OfficeOpenXml;
@@ -8,12 +9,23 @@ namespace Deutsche_Bahn_Dienstplan_zu_Kalender_Konverter
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        private string _resultFileName = "MeinCalendar";
+        public string ResultFileName
+        {
+            get { return _resultFileName; }
+            set
+            {
+                _resultFileName = value;
+                OnPropertyChanged(nameof(ResultFileName));
+            }
+        }
+
         public MainWindow()
         {
             InitializeComponent();
-            ResultFileName = "Calendar.ics";
+            DataContext = this; // Set DataContext to the current instance
         }
         private void PickFile_Click(object sender, RoutedEventArgs e)
         {
@@ -40,7 +52,7 @@ namespace Deutsche_Bahn_Dienstplan_zu_Kalender_Konverter
                         SaveFileDialog saveFileDialog = new SaveFileDialog();
                         saveFileDialog.Filter = "iCalendar Files (*.ics)|*.ics|All Files (*.*)|*.*";
                         saveFileDialog.DefaultExt = ".ics";
-                        saveFileDialog.FileName = ResultFileName.Text;
+                        saveFileDialog.FileName = ResultFileName + ".ics";
 
                         // If the user selects a location and clicks "Save"
                         if (saveFileDialog.ShowDialog() == true)
@@ -49,13 +61,13 @@ namespace Deutsche_Bahn_Dienstplan_zu_Kalender_Konverter
 
                             // Write the calendar content to the selected file
                             File.WriteAllText(calendarFilePath, calendarContent);
-                            MessageBox.Show($"Calendar file saved successfully at {calendarFilePath}");
+                            MessageBox.Show($"Kalender-Datei erfolgreich gespeichert unter: {calendarFilePath}");
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error: {ex.Message}");
+                    MessageBox.Show($"Fehler: {ex.Message}");
                 }
             }
         }
@@ -76,25 +88,8 @@ namespace Deutsche_Bahn_Dienstplan_zu_Kalender_Konverter
                     // Loop through the days in this month (columns 2 to totalColumns)
                     for (int col = 2; col <= totalColumns; col++)
                     {
-                        string dayText = string.Empty;
-
                         var cell = worksheet.Cells[row, col];
-
-                        // Check if the current cell is merged
-                        if (cell.Merge)
-                        {
-                            // Get the merged range's first (top-left) cell
-                            var mergedRange = worksheet.Cells[cell.Start.Row, cell.Start.Column];
-                            dayText = mergedRange.Text;
-
-                            // Skip all columns in this merged block
-                            col = cell.End.Column; // Move to the last column of the merged block
-                        }
-                        else
-                        {
-                            dayText = cell.Text;
-                        }
-
+                        string dayText = cell.Text ?? string.Empty;
                         // If it's a valid day, process it
                         if (int.TryParse(dayText, out int day))
                         {
@@ -102,42 +97,9 @@ namespace Deutsche_Bahn_Dienstplan_zu_Kalender_Konverter
 
                             // 2nd sub-row: Shift Type
                             string shiftType = worksheet.Cells[row + 1, col].Text;
-
-                            // Handle whole-number shift types as continuous events
-                            if (int.TryParse(shiftType, out int _)) // Whole number detected
+                            if (!string.IsNullOrEmpty(shiftType) && !isShiftTypeFree(shiftType)) // Handle normal shift types
                             {
-                                int endCol = col;
-
-                                // Continue until the shift type changes or the column ends
-                                while (endCol <= totalColumns)
-                                {
-                                    string nextShiftType = worksheet.Cells[row + 1, endCol].Text;
-                                    string nextCellText = worksheet.Cells[row, endCol].Merge ?
-                                        worksheet.Cells[worksheet.Cells[row, endCol].Start.Row, worksheet.Cells[row, endCol].Start.Column].Text :
-                                        worksheet.Cells[row, endCol].Text;
-
-                                    bool isNextShiftType = !int.TryParse(nextShiftType, out int _);
-                                    bool isEmptyCell = string.IsNullOrWhiteSpace(nextCellText);
-
-                                    if (isNextShiftType || isEmptyCell)
-                                        break;
-
-                                    endCol++;
-                                }
-
-                                // The last day in this block
-                                DateTime eventEndDate = new DateTime(monthStart.Year, monthStart.Month,
-                                    int.Parse(worksheet.Cells[row, endCol - 1].Text)).AddDays(1);
-
-                                // Add the full-day event to the calendar
-                                calendarContent += CreateFullDayEvent(eventStartDate, eventEndDate, $"Free ({shiftType})");
-
-                                // Skip processed columns
-                                col = endCol - 1;
-                            }
-                            else if (!string.IsNullOrEmpty(shiftType)) // Handle normal shift types
-                            {
-                                DateTime eventEndDate = eventStartDate.AddDays(1); // Single-day event
+                                DateTime eventEndDate = eventStartDate.AddDays(1);
                                 calendarContent += CreateFullDayEvent(eventStartDate, eventEndDate, shiftType);
                             }
                         }
@@ -147,6 +109,11 @@ namespace Deutsche_Bahn_Dienstplan_zu_Kalender_Konverter
 
             calendarContent += "END:VCALENDAR";
             return calendarContent;
+        }
+
+        private bool isShiftTypeFree(string shiftType)
+        {
+            return int.TryParse(shiftType, out int _);
         }
 
 
@@ -159,9 +126,10 @@ namespace Deutsche_Bahn_Dienstplan_zu_Kalender_Konverter
                    "END:VEVENT\n";
         }
 
-        private void FilePathTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propertyName)
         {
-
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
