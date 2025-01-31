@@ -4,6 +4,8 @@
 ![Alt-Text](https://github.com/TetsuGuy/Deutsche-Bahn-Dienstplan-Konverter/blob/master/DB%20Kalender%20Toolk.png)
 
 Dieses Projekt ist eine Windows-Anwendung, die einen Dienstplan der Deutschen Bahn aus einer PDF-Datei (.pdf) in eine Kalenderdatei (.ics) umwandelt.
+Hintergrund: Die DB erstellt digitale Dienstpläne für das ganze Jahr (Jahrespläne) in Form einer einseitigen PDF-Datei. Diese kann man als Mitarbeiter oder Angehöriger
+in dieser Form nicht in einen Kalender (Google Calendar etc.) eintragen.
 
 ## Funktionen
 - Auswahl einer PDF-Datei mit Dienstplandaten
