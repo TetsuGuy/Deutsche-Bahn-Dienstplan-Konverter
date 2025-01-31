@@ -5,27 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Deutsche_Bahn_Dienstplan_zu_Kalender_Konverter"
         mc:Ignorable="d"
-        Title="DB Schichten zu Kalender Konverter" Height="200" Width="565">
+        Title="DB Schichten zu Kalender Konverter" Height="200" Width="350">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="94*"/>
             <ColumnDefinition Width="471*"/>
         </Grid.ColumnDefinitions>
-        <Image Source="/header.png" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25,10,0,0" Width="346" Height="50" Grid.Column="1"/>
-        <TextBox x:Name="FilePathTextBox" 
-         Text="{Binding ResultFileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-         HorizontalAlignment="Left" 
-         VerticalAlignment="Center" 
-         Width="368" Height="18" 
-         Margin="15,0,0,0" 
-         TextWrapping="Wrap" Grid.Column="1"/>
-        <Button Content="Excel Tabelle auswählen" HorizontalAlignment="Left" VerticalAlignment="Top" 
-                Click="PickFile_Click" Padding="10" Width="150" Margin="114,114,0,0" Background="#FFF01414" Foreground="White" BorderThickness="1,1,1,1" Grid.Column="1">
+        <Image Source="/header.png" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,18,0,0" Width="316" Height="50" Grid.ColumnSpan="2"/>
+        <Button Content="Dienstplan (PDF) auswählen" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                Click="PickFile_Click_PDF" Padding="10" Width="174" Margin="30,102,0,0" Background="#FFF01414" Foreground="White" BorderThickness="1,1,1,1" Grid.Column="1">
             <Button.Style>
                 <Style/>
             </Button.Style>
         </Button>
-        <TextBlock x:Name="PickFileTextBlock" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"
-                   FontSize="14" TextWrapping="Wrap" TextAlignment="Center" Width="94" Height="18" Grid.ColumnSpan="2"><Run Language="de-de" Text="Kalendername"/></TextBlock>
     </Grid>
 </Window>
